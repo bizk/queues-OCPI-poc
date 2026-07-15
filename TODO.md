@@ -1,11 +1,11 @@
 Producer
 
-- [ ] Init 
+- [x] Init 
 - [ ] Create docker compose with nats
-- [ ] Create Rest endpoint to receive events. It should have 3 endpoints
-  - [ ] / as a health check
-  - [ ] POST /event to create a new event
-  - [ ] GET /event to get the events
+- [x] Create Rest endpoint to receive events. It should have 3 endpoints
+  - [x] / as a health check
+  - [x] POST /event to create a new event
+  - [x] GET /event to get the events
 - [ ] Connect to NATS 
 - [ ] Produce and publish Nats message
 - [ ] Create job to produce random messages at random times with poison
