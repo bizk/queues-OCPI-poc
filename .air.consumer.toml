@@ -2,7 +2,7 @@ root = "/app"
 tmp_dir = "/tmp/air-consumer"
 
 [build]
-cmd = "go build -o /tmp/air-consumer/consumer ./cmd/consumer"
+cmd = "go build -buildvcs=false -o /tmp/air-consumer/consumer ./cmd/consumer"
 bin = "/tmp/air-consumer/consumer"
 include_ext = ["go"]
 exclude_dir = [".git", "tmp", "vendor"]

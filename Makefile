@@ -1,6 +1,6 @@
 
 api:
-	go run cmd/api/main.go
+	go run -buildvcs=false cmd/api/main.go
 
 consumer:
-	go run cmd/consumer/main.go
+	go run -buildvcs=false cmd/consumer/main.go
