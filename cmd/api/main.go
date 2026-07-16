@@ -48,7 +48,11 @@ func main() {
 			if i == 4 {
 				eventBytes = []byte{1, 2, 16, 0} // Inject broken data
 			}
-			queue.Publish("event", eventBytes)
+			if err = queue.Publish("event", eventBytes); err != nil {
+				fmt.Printf("error publishing event: %v\n", err)
+				continue
+			}
+
 		}
 
 		c.JSON(http.StatusOK, gin.H{"message": "event received"})
@@ -62,6 +66,16 @@ func main() {
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"data": documents})
+	})
+
+	router.GET("/dlq", func(c *gin.Context) {
+		responses, err := queue.ListEDQ()
+		if err != nil {
+			fmt.Printf("error listing DLQ: %v\n", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "error listing DLQ"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"data": responses})
 	})
 
 	router.Run(":8080")

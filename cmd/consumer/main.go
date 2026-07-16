@@ -7,19 +7,20 @@ import (
 	"queues-ocpi-poc/internal/queue"
 	"time"
 
+	"github.com/charmbracelet/log"
 	"github.com/nats-io/nats.go"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 func main() {
-	fmt.Println("### Consumer start ###!")
+	log.SetLevel(log.DebugLevel)
+	log.Info("[CONSUMER] ### Consumer start ###!")
 	ctx := context.Background()
 	defer ctx.Done()
 
-	fmt.Println("Starting queue...")
 	q, err := queue.NewNATSQueue()
 	if err != nil {
-		fmt.Printf("error starting queue: %v\n", err)
+		log.Error("[CONSUMER] error starting queue: %v\n", err)
 		return
 	}
 
@@ -29,31 +30,34 @@ func main() {
 		return
 	}
 	defer d.Disconnect(ctx)
-	defer d.DropCollection(ctx, "events")
+	d.DropCollection(ctx, "events")
 
 	err = q.Subscribe("event", func(m *nats.Msg) {
-		fmt.Println("Received event: ", time.Now().UTC())
+		log.Infof("[CONSUMER] Received event: %s", time.Now().Format(time.RFC3339))
 		var event db.Event
 		err := bson.Unmarshal(m.Data, &event)
 		if err != nil {
-			fmt.Printf("error unmarshalling event: %v\n", err)
+			log.Errorf("[CONSUMER] error unmarshalling event: %v\n", err)
+			m.Respond([]byte("Bad request"))
 			return
 		}
 
-		fmt.Println("Event: ", event.Name)
+		log.Debugf("[CONSUMER] Event: %s", event.Name)
 
 		err = d.InsertDocument(ctx, "events", event)
 		if err != nil {
-			fmt.Printf("error inserting document: %v\n", err)
+			log.Error("[CONSUMER] error inserting document: %v\n", err)
+			m.Respond([]byte("Internal server error"))
 			return
 		}
 
-		m.Respond([]byte("event received"))
+		log.Debugf("[CONSUMER] > Event inserted")
+		m.Respond([]byte("Ok"))
 	})
 
 	for true {
 		if err != nil {
-			fmt.Printf("error subscribing to queue: %v\n", err)
+			log.Error("[CONSUMER] error subscribing to queue: %v\n", err)
 			return
 		}
 		time.Sleep(5 * time.Second)

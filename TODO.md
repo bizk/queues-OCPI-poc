@@ -9,9 +9,11 @@ Producer
 - [x] Connect to NATS 
 - [x] Produce and publish Nats message
 - [x] Create job to produce random messages at random times with poison
-- [ ] Create worker to do the job
 - [x] Mongo
   - [x] Connect to Mongo
   - [x] Write to Mongo
 - [ ] OCPI logic
 - [ ] Add dead letter logic
+- [ ] Create worker to do the job
+- [ ] span multiple workers to do it in paralel
+- [ ] Correct defers
