@@ -33,6 +33,14 @@ func NewNATSQueue() (*NATSQueue, error) {
 		return nil, err
 	}
 
+	_, err = js.AddStream(&nats.StreamConfig{
+		Name: "DLQ",
+	})
+	if err != nil {
+		log.Errorf("[QUEUE] error adding stream to NATS: %v\n", err)
+		return nil, err
+	}
+
 	return &NATSQueue{nc: nc, js: js}, nil
 }
 

@@ -50,6 +50,7 @@ func main() {
 			}
 			if err = queue.Publish("event", eventBytes); err != nil {
 				fmt.Printf("error publishing event: %v\n", err)
+				queue.PushToDLQ(eventBytes)
 				continue
 			}
 
